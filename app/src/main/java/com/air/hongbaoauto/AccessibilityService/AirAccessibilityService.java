@@ -11,6 +11,7 @@ import android.os.PowerManager;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +43,7 @@ public class AirAccessibilityService extends AccessibilityService {
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         int eventType = event.getEventType();
-        if (auto)
+        if (true)
             Log.e("AAAAAAAA", "有事件" + eventType);
         switch (eventType) {
             //当通知栏发生改变时
@@ -87,29 +88,61 @@ public class AirAccessibilityService extends AccessibilityService {
             //当窗口的状态发生改变时
             case AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED:
                 String className = event.getClassName().toString();
-                if (className.equals("com.tencent.mm.ui.LauncherUI")) {
-                    //点击最后一个红包
-                    Log.e("AAAAAAAA", "点击红包");
-                    if (auto)
-                        getLastPacket();
-                    auto = false;
-                    WXMAIN = true;
-                } else if (className.equals("com.tencent.mm.plugin.luckymoney.ui.LuckyMoneyReceiveUI")) {
-                    //开红包
-                    Log.e("AAAAAAAA", "开红包");
-                    click("com.tencent.mm:id/bag");
-                    auto = false;
-                    WXMAIN = false;
-                } else if (className.equals("com.tencent.mm.plugin.luckymoney.ui.LuckyMoneyDetailUI")) {
-                    //退出红包
-                    Log.e("AAAAAAAA", "退出红包");
-                    click("com.tencent.mm:id/fb");
-                    WXMAIN = false;
+                Log.e("className", className);
+                Toast.makeText(this, className, Toast.LENGTH_SHORT).show();
+                if("com.cslc.playlot.activity.MainActivity".equals(className)){
+                    //进入了主界面
+                    click("超级大乐透","android.widget.LinearLayout");
+                }else if("com.cslc.playlot.activity.DLTActivity".equals(className)){
+                    List<AccessibilityNodeInfo> nodeInfoListByText = getNodeInfoListByText("01");
+                    nodeInfoListByText.get(0).performAction(AccessibilityNodeInfo.ACTION_CLICK);
 
-                } else {
-                    WXMAIN = false;
-                    lastMAIN = className;
+
+                    nodeInfoListByText.get(1).performAction(AccessibilityNodeInfo.ACTION_CLICK);
+
+                    List<AccessibilityNodeInfo> nodeInfoListByText1 = getNodeInfoListByText("02");
+                    nodeInfoListByText1.get(0).performAction(AccessibilityNodeInfo.ACTION_CLICK);
+
+                    nodeInfoListByText1.get(1).performAction(AccessibilityNodeInfo.ACTION_CLICK);
+
+                    List<AccessibilityNodeInfo> nodeInfoListByText2 = getNodeInfoListByText("03");
+                    nodeInfoListByText2.get(0).performAction(AccessibilityNodeInfo.ACTION_CLICK);
+
+                    List<AccessibilityNodeInfo> nodeInfoListByText3 = getNodeInfoListByText("04");
+                    nodeInfoListByText3.get(0).performAction(AccessibilityNodeInfo.ACTION_CLICK);
+
+                    List<AccessibilityNodeInfo> nodeInfoListByText4 = getNodeInfoListByText("05");
+                    nodeInfoListByText4.get(0).performAction(AccessibilityNodeInfo.ACTION_CLICK);
+
+               getNodeInfoListByText("选好了").get(0).performAction(AccessibilityNodeInfo.ACTION_CLICK);
+
+                }else if("com.cslc.playlot.activity.DLTOrderActivity".equals(className)){
+                    getNodeInfoListByText("生成投注单").get(0).performAction(AccessibilityNodeInfo.ACTION_CLICK);
+
                 }
+//                if (className.equals("com.tencent.mm.ui.LauncherUI")) {
+//                    //点击最后一个红包
+//                    Log.e("AAAAAAAA", "点击红包");
+//                    if (auto)
+//                        getLastPacket();
+//                    auto = false;
+//                    WXMAIN = true;
+//                } else if (className.equals("com.tencent.mm.plugin.luckymoney.ui.LuckyMoneyReceiveUI")) {
+//                    //开红包
+//                    Log.e("AAAAAAAA", "开红包");
+//                    click("com.tencent.mm:id/bag");
+//                    auto = false;
+//                    WXMAIN = false;
+//                } else if (className.equals("com.tencent.mm.plugin.luckymoney.ui.LuckyMoneyDetailUI")) {
+//                    //退出红包
+//                    Log.e("AAAAAAAA", "退出红包");
+//                    click("com.tencent.mm:id/fb");
+//                    WXMAIN = false;
+//
+//                } else {
+//                    WXMAIN = false;
+//                    lastMAIN = className;
+//                }
                 break;
         }
     }
@@ -124,6 +157,34 @@ public class AirAccessibilityService extends AccessibilityService {
             }
         }
     }
+    private void click(String text,String widgtType) {
+        AccessibilityNodeInfo nodeInfo = getRootInActiveWindow();
+        if (nodeInfo != null) {
+            List<AccessibilityNodeInfo> list = nodeInfo.findAccessibilityNodeInfosByText(text);
+            for (AccessibilityNodeInfo item : list) {
+                item.getParent().performAction(AccessibilityNodeInfo.ACTION_CLICK);
+              //  if("android.widget.LinearLayout".equals(item.getClassName()));
+             //   item.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+            }
+        }
+    }
+
+    private  List<AccessibilityNodeInfo> getNodeInfoListByText(String text) {
+        AccessibilityNodeInfo nodeInfo = getRootInActiveWindow();
+        if (nodeInfo != null) {
+            List<AccessibilityNodeInfo> list = nodeInfo.findAccessibilityNodeInfosByText(text);
+//            for (AccessibilityNodeInfo item : list) {
+//                item.getParent().performAction(AccessibilityNodeInfo.ACTION_CLICK);
+//                //  if("android.widget.LinearLayout".equals(item.getClassName()));
+//                //   item.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+//            }
+            return list;
+        }
+        return null;
+    }
+
+
+
 
     private void getLastPacket() {
 
